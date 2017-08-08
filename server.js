@@ -1,7 +1,7 @@
 'use strict';
 
 const express = require('express');
-const debug = require('debug');
+const debug = require('debug')('beertap:server');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
