@@ -5,7 +5,8 @@
   "main": "server.js",
   "scripts": {
     "test": "DEBUG='brewery*' mocha",
-    "start": "DEBUG='brewery*' node server.js"
+    "start": "DEBUG='brewery*' node server.js",
+    "lint": "eslint"
   },
   "repository": {
     "type": "git",

@@ -2,10 +2,10 @@
 const expect = require('chai').expect;
 const request = require('superagent');
 const Promise = require('bluebird');
-const mongoose = require('mongoose');
 
 const User = require('../model/user.js');
 const Brewery = require('../model/brewery.js');
+const Beer = require('../model/beer.js');
 
 const url = `http://localhost:${process.env.PORT}`;
 
@@ -40,7 +40,8 @@ describe('Brewery Routes', function() {
   afterEach( done => {
     Promise.all([
       User.remove({}),
-      Brewery.remove({})
+      Brewery.remove({}),
+      Beer.remove({})
     ])
     .then( () => done())
     .catch(done);
@@ -235,6 +236,50 @@ describe('Brewery Routes', function() {
           });
         });
       });
+    });
+  });
+});
+
+describe('DELETE: /api/brewery/:id', () => {
+  beforeEach( done => {
+    new User(exampleUser)
+    .generatePasswordHash(exampleUser.password)
+    .then( user => {
+      return user.save();
+    })
+    .then( user => {
+      this.tempUser = user;
+      return user.generateToken();
+    })
+    .then( token => {
+      this.tempToken = token;
+      done();
+    })
+    .catch(done);
+  });
+  beforeEach( done => {
+    exampleBrewery.userID = this.tempUser._id.toString();
+    new Brewery(exampleBrewery).save()
+    .then( brewery => {
+      this.tempBrewery = brewery;
+      return Brewery.findByIdAndAddBeer(brewery._id, exampleBeer);
+    })
+    .then( beer => {
+      this.tempBeer = beer;
+      done();
+    })
+    .catch(done);
+  });
+
+  it('DELETE should delete a brewery 204', done => {
+    request.delete(`${url}/api/brewery/${this.tempBrewery._id}`)
+    .set({
+      Authorization: `Bearer ${this.tempToken}`
+    })
+    .end( (err, res) => {
+      if(err) return done(err);
+      expect(res.status).to.equal(204);
+      done();
     });
   });
 });
