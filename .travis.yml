@@ -3,12 +3,12 @@ os:
   -osx
 sudo: false
 node_js:
-  -"node"
+  - "node"
 services:
-  -mongodb
+  - mongodb
 install:
-  -npm install
+  - npm install
 before_script:
-  -sleep 15
+  - sleep 15
 script:
-  -npm test
+  - npm test
