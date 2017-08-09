@@ -2,11 +2,11 @@
 
 const Router = require('express').Router;
 const jsonParser = require('body-parser').json();
-const createError = require('http-errors');
 const debug = require('debug')('brewery:brewery-route');
 
 const Brewery = require('../model/brewery.js');
 const bearerAuth = require('../lib/bearer-auth-middleware');
+
 const breweryRouter = module.exports = new Router();
 
 breweryRouter.post('/api/brewery', bearerAuth, jsonParser, function(req, res, next){

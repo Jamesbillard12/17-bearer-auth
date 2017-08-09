@@ -1,7 +1,7 @@
 'use strict';
 
 const jsonParser = require('body-parser').json();
-const debug = require('debug')('beertap:auth-router');
+const debug = require('debug')('brewery:auth-router');
 const Router = require('express').Router;
 const createError = require('http-errors');
 const basicAuth = require('../lib/basic-auth-middleware.js');

@@ -6,7 +6,7 @@ const jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');
 const createError = require('http-errors');
 const Promise = require('bluebird');
-const debug = require('debug')('beertap:user');
+const debug = require('debug')('brewery:user');
 
 const Schema = mongoose.Schema;
 
@@ -67,7 +67,7 @@ userSchema.methods.generateToken = function() {
 
   return new Promise((resolve, reject) => {
     this.generateFindHash()
-    .then( findHash => resolve(jwt.sign({token: findHash}, process.env.APP_SECRET)))
+    .then( findHash => resolve(jwt.sign({ token: findHash }, process.env.APP_SECRET)))
     .catch(err =>reject(err));
   });
 };
