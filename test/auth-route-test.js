@@ -23,7 +23,7 @@ describe('Auth Routes', function() {
         .catch(done);
       });
 
-      it('should return a token', done => {
+      it('should return a token 200', done => {
         request.post(`${url}/api/signup`)
         .send(exampleUser)
         .end((err, res) => {
@@ -73,7 +73,7 @@ describe('Auth Routes', function() {
         .catch(done);
       });
 
-      it('should return a token', done => {
+      it('should return a token 200', done => {
         request.get(`${url}/api/signin`)
         .auth('exampleuser', '1234')
         .end((err, res) => {

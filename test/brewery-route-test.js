@@ -64,8 +64,8 @@ describe('Brewery Routes', function() {
       .catch(done);
     });
 
-    describe('with a valid req body',() => {
-      it('should return a brewery', done => {
+    describe('POST with a valid req body',() => {
+      it('should return a brewery 200', done => {
         request.post(`${url}/api/brewery`)
         .send(exampleBrewery)
         .set({
@@ -81,7 +81,7 @@ describe('Brewery Routes', function() {
         });
       });
     });
-    describe('with an invalid request', () => {
+    describe('POST with an invalid request', () => {
       it('should return 400', done => {
         request.post(`${url}/api/brewery`)
         .send()
@@ -90,6 +90,16 @@ describe('Brewery Routes', function() {
         })
         .end((err,res) => {
           expect(res.status).to.equal(400);
+          done();
+        });
+      });
+    });
+    describe('POST without a token 401', () => {
+      it('should return 401', done => {
+        request.post(`${url}/api/brewery`)
+        .send()
+        .end((err,res) => {
+          expect(res.status).to.equal(401);
           done();
         });
       });
@@ -127,7 +137,7 @@ describe('Brewery Routes', function() {
       .catch(done);
     });
 
-    it('should return a brewery', done => {
+    it('GET should return a brewery 200', done => {
       request.get(`${url}/api/brewery/${this.tempBrewery._id}`)
       .set({
         Authorization: `Bearer ${this.tempToken}`
@@ -145,56 +155,86 @@ describe('Brewery Routes', function() {
         done();
       });
     });
-    //   describe('with an invalid request', function(){
-    //     it('should return 404', done => {
-    //       request.get(`${url}/api/brewery/1231231231241413212`)
-    //       .end( (err, res) => {
-    //         expect(res.status).to.equal(404);
-    //         done();
-    //       });
-    //     });
-    //   });
-    // });
-    // describe('testing PUT /api/brewery/:id', () => {
-    //   before( done => {
-    //     exampleBrewery.timestamp = new Date();
-    //     new Brewery(exampleBrewery).save()
-    //     .then( brewery => {
-    //       this.tempBrewery = brewery;
-    //       done();
-    //     })
-    //     .catch(done);
-    //   });
-    //
-    //   it('should respond with a 200 status code and an updated brewery object.', () => {
-    //     return request.put(`${url}/api/brewery/${this.tempBrewery._id}`)
-    //     .send(newBrewery)
-    //     .then(res => {
-    //       expect(res.status).to.equal(200);
-    //       expect(res.body.name).to.equal('new test brewery name');
-    //       expect(res.body.address).to.equal('new test address');
-    //       expect(res.body.phoneNumber).to.equal('777-777-7777');
-    //       tempBrewery = res.body;
-    //     });
-    //   });
-    // });
-    //
-    // it('should respond with a 400 error code.', () => {
-    //   return request.post(`${url}/api/brewery`)
-    //   .send(tempBrewery)
-    //   .then((res) => {
-    //     tempBrewery = res.body;
-    //     return request.put(`${url}/api/brewery/${this.tempBrewery._id}`)
-    //     .send(null);
-    //   })
-    //   .catch(err => {
-    //     expect(err.status).to.equal(400);
-    //   });
-    // });
-    // it('should respond with a 404 error code if an ID is not found.', () => {
-    //   return request.get(`${url}/api/brewery/12345`)
-    //   .catch(err => {
-    //     expect(err.status).to.equal(404);
-    //   });
+    describe('GET with an invalid request 404', () => {
+      it('should return 404', done => {
+        request.get(`${url}/api/brewery/1231231231241413212`)
+        .set({
+          Authorization: `Bearer ${this.tempToken}`
+        })
+        .end( (err, res) => {
+          expect(res.status).to.equal(404);
+          done();
+        });
+      });
+      describe('GET with no token should be 401', () => {
+        it('should return 401', done => {
+          request.get(`${url}/api/brewery/1231231231241413212`)
+          .end( (err, res) => {
+            expect(res.status).to.equal(401);
+            done();
+          });
+        });
+      });
+
+      describe('testing PUT /api/brewery/:id', () => {
+        before( done => {
+          exampleBrewery.timestamp = new Date();
+          new Brewery(exampleBrewery).save()
+          .then( brewery => {
+            this.tempBrewery = brewery;
+            done();
+          })
+          .catch(done);
+        });
+
+        it('PUT should respond with a 200 status code and an updated brewery object.', () => {
+          return request.put(`${url}/api/brewery/${this.tempBrewery._id}`)
+          .set({
+            Authorization: `Bearer ${this.tempToken}`
+          })
+          .send(newBrewery)
+          .then(res => {
+            expect(res.status).to.equal(200);
+            expect(res.body.name).to.equal('new test brewery name');
+            expect(res.body.address).to.equal('new test address');
+            expect(res.body.phoneNumber).to.equal('777-777-7777');
+            tempBrewery = res.body;
+          });
+        });
+        it('PUT should respond with a 400 error code.', () => {
+          return request.post(`${url}/api/brewery`)
+          .set({
+            Authorization: `Bearer ${this.tempToken}`
+          })
+          .send(tempBrewery)
+          .then((res) => {
+            tempBrewery = res.body;
+            return request.put(`${url}/api/brewery/${this.tempBrewery._id}`)
+            .set({
+              Authorization: `Bearer ${this.tempToken}`
+            })
+            .send(null);
+          })
+          .catch(err => {
+            expect(err.status).to.equal(400);
+          });
+        });
+        it('PUT should respond with a 404 error code if an ID is not found.', () => {
+          return request.put(`${url}/api/brewery/12345`)
+          .set({
+            Authorization: `Bearer ${this.tempToken}`
+          })
+          .catch(err => {
+            expect(err.status).to.equal(404);
+          });
+        });
+        it('PUT should respond with a 401 if no token was sent', () => {
+          return request.put(`${url}/api/brewery/12345`)
+          .catch(err => {
+            expect(err.status).to.equal(401);
+          });
+        });
+      });
+    });
   });
 });
